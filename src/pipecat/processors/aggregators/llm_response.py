@@ -652,6 +652,7 @@ class LLMUserContextAggregator(LLMContextResponseAggregator):
             self._aggregation = frame.text.strip()
 
             if len(self._aggregation) > 0:
+                logger.debug(f"Evaluating interruption strategies on interim transcription: {self._aggregation}")
                 should_interrupt = await self._should_interrupt_based_on_strategies()
                 if should_interrupt:
                     logger.debug(
