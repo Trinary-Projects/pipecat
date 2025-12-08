@@ -61,9 +61,6 @@ from pipecat.processors.aggregators.openai_llm_context import (
 from pipecat.processors.frame_processor import FrameDirection, FrameProcessor
 from pipecat.utils.time import time_now_iso8601
 
-from pipecat.processors.frameworks.rtvi import RTVIServerMessageFrame
-
-
 @dataclass
 class LLMUserAggregatorParams:
     """Parameters for configuring LLM user aggregation behavior.
@@ -661,6 +658,7 @@ class LLMUserContextAggregator(LLMContextResponseAggregator):
                         "Interruption conditions met on interim transcription - triggering early interruption"
                     )
                     await self.push_interruption_task_frame_and_wait()
+                    from pipecat.processors.frameworks.rtvi import RTVIServerMessageFrame
                     self.push_frame(RTVIServerMessageFrame(data=f'Interruption triggered by interim transcription {self._aggregation}'), FrameDirection.UPSTREAM)
 
             self._aggregation = original_aggregation
