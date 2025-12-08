@@ -643,8 +643,23 @@ class LLMUserContextAggregator(LLMContextResponseAggregator):
         # Reset aggregation timer.
         self._aggregation_event.set()
 
-    async def _handle_interim_transcription(self, _: InterimTranscriptionFrame):
+    async def _handle_interim_transcription(self, frame: InterimTranscriptionFrame):
         self._seen_interim_results = True
+
+        if self.interruption_strategies and self._bot_speaking and frame.text and not self._wait_for_interruption:
+            # Temporarily set aggregation to interim text for strategy evaluation
+            original_aggregation = self._aggregation
+            self._aggregation = frame.text.strip()
+
+            if len(self._aggregation) > 0:
+                should_interrupt = await self._should_interrupt_based_on_strategies()
+                if should_interrupt:
+                    logger.debug(
+                        "Interruption conditions met on interim transcription - triggering early interruption"
+                    )
+                    await self.push_interruption_task_frame_and_wait()
+
+            self._aggregation = original_aggregation
 
     def _create_aggregation_task(self):
         if not self._aggregation_task:

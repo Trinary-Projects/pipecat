@@ -566,7 +566,7 @@ class FrameProcessor(BaseObject):
         # frames and we will process the frame right away. This is because a
         # previous system frame might be waiting for the interruption frame and
         # it's blocking the input task.
-        if self._wait_for_interruption and isinstance(frame, InterruptionFrame):
+        if isinstance(frame, InterruptionFrame):
             await self.__process_frame(frame, direction, callback)
             return
 
