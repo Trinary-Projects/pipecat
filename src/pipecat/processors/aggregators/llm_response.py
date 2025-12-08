@@ -659,7 +659,7 @@ class LLMUserContextAggregator(LLMContextResponseAggregator):
                     )
                     await self.push_interruption_task_frame_and_wait()
                     from pipecat.processors.frameworks.rtvi import RTVIServerMessageFrame
-                    self.push_frame(RTVIServerMessageFrame(data=f'Interruption triggered by interim transcription {self._aggregation}'), FrameDirection.UPSTREAM)
+                    await self.push_frame(RTVIServerMessageFrame(data=f'Interruption triggered by interim transcription {self._aggregation}'), FrameDirection.UPSTREAM)
 
             self._aggregation = original_aggregation
 
