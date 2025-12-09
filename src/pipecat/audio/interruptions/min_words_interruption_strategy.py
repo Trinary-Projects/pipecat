@@ -48,7 +48,7 @@ class MinWordsInterruptionStrategy(BaseInterruptionStrategy):
         word_count = len(self._text.split())
         interrupt = word_count >= self._min_words
         logger.debug(
-            f"should_interrupt={interrupt} num_spoken_words={word_count} min_words={self._min_words}"
+            f"should_interrupt={interrupt} num_spoken_words={word_count} min_words={self._min_words}, words= {self._text.split()}"
         )
         return interrupt
 
