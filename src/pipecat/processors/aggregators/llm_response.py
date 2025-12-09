@@ -542,9 +542,6 @@ class LLMUserContextAggregator(LLMContextResponseAggregator):
                         data=f'Final Transcript - Interruption triggered by transcription {original_aggregation}'),
                         FrameDirection.UPSTREAM)
                 else:
-                    await self.push_frame(RTVIServerMessageFrame(
-                        data=f'Final Transcript - Interruption conditions not met - not pushing aggregation {self._aggregation}'),
-                        FrameDirection.UPSTREAM)
                     logger.debug("Interruption conditions not met - not pushing aggregation")
                     # Don't process aggregation, just reset it
                     await self.reset()
@@ -668,9 +665,9 @@ class LLMUserContextAggregator(LLMContextResponseAggregator):
                     )
                     await self.push_interruption_task_frame_and_wait()
                     await self.push_frame(RTVIServerMessageFrame(data=f'Interim Transcript - Interruption triggered by transcription {self._aggregation}'), FrameDirection.UPSTREAM)
-                else:
-                    logger.debug("Interruption conditions not met on interim transcription")
-                    await self.push_frame(RTVIServerMessageFrame(data=f'Interim Transcript - Interruption conditions not met on transcription {self._aggregation}'), FrameDirection.UPSTREAM)
+                # else:
+                #     logger.debug("Interruption conditions not met on interim transcription")
+                #     await self.push_frame(RTVIServerMessageFrame(data=f'Interim Transcript - Interruption conditions not met on transcription {self._aggregation}'), FrameDirection.UPSTREAM)
 
 
             self._aggregation = original_aggregation
