@@ -674,6 +674,7 @@ class LLMUserContextAggregator(LLMContextResponseAggregator):
 
 
             self._aggregation = original_aggregation
+            [await s.reset() for s in self._interruption_strategies]
 
     def _create_aggregation_task(self):
         if not self._aggregation_task:
