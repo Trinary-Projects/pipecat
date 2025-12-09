@@ -525,6 +525,7 @@ class LLMUserContextAggregator(LLMContextResponseAggregator):
         await self.push_frame(frame)
 
     async def push_aggregation(self):
+        from pipecat.processors.frameworks.rtvi import RTVIServerMessageFrame
         """Push the current aggregation based on interruption strategies and conditions."""
         if len(self._aggregation) > 0:
             if self.interruption_strategies and self._bot_speaking:
@@ -536,7 +537,13 @@ class LLMUserContextAggregator(LLMContextResponseAggregator):
                     )
                     await self.push_interruption_task_frame_and_wait()
                     await self._process_aggregation()
+                    await self.push_frame(RTVIServerMessageFrame(
+                        data=f'Final Transcript - Interruption triggered by interim transcription {self._aggregation}'),
+                        FrameDirection.UPSTREAM)
                 else:
+                    await self.push_frame(RTVIServerMessageFrame(
+                        data=f'Final Transcript - Interruption conditions not met - not pushing aggregation {self._aggregation}'),
+                        FrameDirection.UPSTREAM)
                     logger.debug("Interruption conditions not met - not pushing aggregation")
                     # Don't process aggregation, just reset it
                     await self.reset()
@@ -659,10 +666,10 @@ class LLMUserContextAggregator(LLMContextResponseAggregator):
                         "Interruption conditions met on interim transcription - triggering early interruption"
                     )
                     await self.push_interruption_task_frame_and_wait()
-                    await self.push_frame(RTVIServerMessageFrame(data=f'Interruption triggered by interim transcription {self._aggregation}'), FrameDirection.UPSTREAM)
+                    await self.push_frame(RTVIServerMessageFrame(data=f'Interim Transcript - Interruption triggered by transcription {self._aggregation}'), FrameDirection.UPSTREAM)
                 else:
                     logger.debug("Interruption conditions not met on interim transcription")
-                    await self.push_frame(RTVIServerMessageFrame(data=f'Interruption conditions not met on interim transcription {self._aggregation}'), FrameDirection.UPSTREAM)
+                    await self.push_frame(RTVIServerMessageFrame(data=f'Interim Transcript - Interruption conditions not met on transcription {self._aggregation}'), FrameDirection.UPSTREAM)
 
 
             self._aggregation = original_aggregation
