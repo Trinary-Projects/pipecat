@@ -535,10 +535,11 @@ class LLMUserContextAggregator(LLMContextResponseAggregator):
                     logger.debug(
                         "Interruption conditions met - pushing interruption and aggregation"
                     )
+                    original_aggregation = self._aggregation
                     await self.push_interruption_task_frame_and_wait()
                     await self._process_aggregation()
                     await self.push_frame(RTVIServerMessageFrame(
-                        data=f'Final Transcript - Interruption triggered by interim transcription {self._aggregation}'),
+                        data=f'Final Transcript - Interruption triggered by transcription {original_aggregation}'),
                         FrameDirection.UPSTREAM)
                 else:
                     await self.push_frame(RTVIServerMessageFrame(
