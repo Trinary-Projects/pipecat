@@ -651,6 +651,7 @@ class LLMUserContextAggregator(LLMContextResponseAggregator):
             self._aggregation = frame.text.strip()
 
             if len(self._aggregation) > 0:
+                from pipecat.processors.frameworks.rtvi import RTVIServerMessageFrame
                 # logger.debug(f"Evaluating interruption strategies on interim transcription: {self._aggregation}")
                 should_interrupt = await self._should_interrupt_based_on_strategies()
                 if should_interrupt:
@@ -658,8 +659,11 @@ class LLMUserContextAggregator(LLMContextResponseAggregator):
                         "Interruption conditions met on interim transcription - triggering early interruption"
                     )
                     await self.push_interruption_task_frame_and_wait()
-                    from pipecat.processors.frameworks.rtvi import RTVIServerMessageFrame
                     await self.push_frame(RTVIServerMessageFrame(data=f'Interruption triggered by interim transcription {self._aggregation}'), FrameDirection.UPSTREAM)
+                else:
+                    logger.debug("Interruption conditions not met on interim transcription")
+                    await self.push_frame(RTVIServerMessageFrame(data=f'Interruption conditions not met on interim transcription {self._aggregation}'), FrameDirection.UPSTREAM)
+
 
             self._aggregation = original_aggregation
 
