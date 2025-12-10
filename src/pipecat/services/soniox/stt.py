@@ -180,6 +180,7 @@ class SonioxSTTService(STTService):
 
         self._receive_task = None
         self._keepalive_task = None
+        self._disconnecting = False
 
     async def start(self, frame: StartFrame):
         """Start the Soniox STT websocket connection.
@@ -270,6 +271,7 @@ class SonioxSTTService(STTService):
             frame: The cancel frame.
         """
         await super().cancel(frame)
+        self._disconnecting = True
         await self._cleanup()
 
     async def run_stt(self, audio: bytes) -> AsyncGenerator[Frame, None]:
@@ -338,6 +340,9 @@ class SonioxSTTService(STTService):
     async def _receive_task_handler(self):
         while True:
             await self._process_messages()
+            # Don't reconnect if we're disconnecting.
+            if self._disconnecting:
+                return
             # Soniox connection may be disconnected, try to reconnect.
             logger.debug("Soniox WebSocket connection was disconnected, reconnecting")
             if self._websocket:
