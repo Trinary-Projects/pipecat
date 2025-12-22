@@ -11,7 +11,7 @@ from loguru import logger
 from pipecat.frames.frames import Frame, InterimTranscriptionFrame, TranscriptionFrame
 from pipecat.turns.user.base_user_turn_start_strategy import BaseUserTurnStartStrategy
 
-from src.pipecat.processors.frameworks.rtvi import RTVIServerMessageFrame
+from pipecat.processors.frameworks.rtvi import RTVIServerMessageFrame
 
 
 class MinWordsUserTurnStartStrategy(BaseUserTurnStartStrategy):
