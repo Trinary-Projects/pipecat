@@ -11,6 +11,8 @@ from loguru import logger
 from pipecat.frames.frames import Frame, InterimTranscriptionFrame, TranscriptionFrame
 from pipecat.turns.user.base_user_turn_start_strategy import BaseUserTurnStartStrategy
 
+from src.pipecat.processors.frameworks.rtvi import RTVIServerMessageFrame
+
 
 class MinWordsUserTurnStartStrategy(BaseUserTurnStartStrategy):
     """User turn start strategy based on a minimum number of words spoken by the user.
@@ -89,3 +91,4 @@ class MinWordsUserTurnStartStrategy(BaseUserTurnStartStrategy):
 
         if should_trigger:
             await self.trigger_user_turn_started()
+        await self.push_frame(RTVIServerMessageFrame(f"{self} interim=True should_trigger={should_trigger} num_spoken_words={word_count} min_words={self._min_words}"))
